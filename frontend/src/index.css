@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-justice-900 text-slate-200 antialiased;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+.glass-card {
+  @apply bg-slate-800/40 backdrop-blur-md border border-slate-700/50 rounded-xl;
+}
+
+.agent-badge {
+  @apply px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider;
+}

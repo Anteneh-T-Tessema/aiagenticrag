@@ -1,0 +1,15 @@
+langchain
+langchain-community
+langgraph
+langchain-ollama
+chromadb
+mcp
+fastmcp
+requests
+python-dotenv
+pydantic
+pytest
+ragas
+pandas
+fastapi
+uvicorn
