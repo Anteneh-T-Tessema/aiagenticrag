@@ -1,0 +1,7 @@
+Disabling PyTorch because PyTorch >= 2.4 is required but found 2.2.2
+INFO:     Started server process [38657]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+ERROR:    [Errno 48] error while attempting to bind on address ('0.0.0.0', 8888): address already in use
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.

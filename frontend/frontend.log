@@ -1,0 +1,18 @@
+
+> lexiswarm-frontend@0.1.0 dev
+> vite --port 3333
+
+
+  VITE v5.4.21  ready in 179 ms
+
+  ➜  Local:   http://localhost:3333/
+  ➜  Network: http://192.168.12.179:3333/
+10:38:41 AM [vite] vite.config.ts changed, restarting server...
+failed to load config from /Users/antenehtessema/developer/AgenticRag/frontend/vite.config.ts
+10:38:41 AM [vite] config must export or return an object.
+10:38:41 AM [vite] server restart failed
+10:38:46 AM [vite] vite.config.ts changed, restarting server...
+10:38:46 AM [vite] server restarted.
+
+  ➜  Local:   http://localhost:3333/aiagenticrag/
+  ➜  Network: http://192.168.12.179:3333/aiagenticrag/
