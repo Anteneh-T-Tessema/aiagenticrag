@@ -9,7 +9,6 @@ type SwarmEvent = {
   synthesizer?: any;
 };
 
-// Utility for cleaner class management
 const cn = (...classes: any[]) => classes.filter(Boolean).join(' ');
 
 export default function App() {
@@ -27,9 +26,11 @@ export default function App() {
     setIsSearching(true);
     setActiveAgent('orchestrator');
 
+    // SUPPORT FOR CLOUD BACKEND
+    const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://127.0.0.1:8888';
+
     try {
-      // Changed to 127.0.0.1 to avoid localhost resolution issues
-      const response = await fetch('http://127.0.0.1:8888/ask', {
+      const response = await fetch(`${BACKEND_URL}/ask`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ query }),
@@ -62,7 +63,7 @@ export default function App() {
       }
     } catch (err) {
       console.error("Swarm connection failed", err);
-      alert("Swarm connection failed. Is the backend running on port 8888?");
+      alert("Swarm connection failed. Check if your backend is running.");
     } finally {
       setIsSearching(false);
       setActiveAgent(null);
@@ -77,7 +78,6 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-200 flex flex-col font-sans">
-      {/* Header */}
       <header className="h-16 border-b border-slate-800 bg-slate-900/50 backdrop-blur-xl flex items-center px-6 justify-between sticky top-0 z-50">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-gradient-to-br from-amber-400 to-amber-600 rounded-lg flex items-center justify-center shadow-lg shadow-amber-500/20">
@@ -97,7 +97,6 @@ export default function App() {
       </header>
 
       <main className="flex-1 flex gap-6 p-6 overflow-hidden max-w-[1600px] mx-auto w-full">
-        {/* Left Col: Activity */}
         <div className="flex-[1.2] flex flex-col gap-6 overflow-hidden">
           <div className="flex justify-between items-center p-4 bg-slate-900/50 border border-slate-800 rounded-xl">
             {[
@@ -150,7 +149,6 @@ export default function App() {
           </div>
         </div>
 
-        {/* Right Col: Input & Output */}
         <div className="flex-[2] flex flex-col gap-6 overflow-hidden">
           <div className="bg-slate-900 border border-slate-800 p-6 rounded-xl shadow-2xl">
             <form onSubmit={handleSubmit} className="relative">

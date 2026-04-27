@@ -16,3 +16,139 @@ failed to load config from /Users/antenehtessema/developer/AgenticRag/frontend/v
 
   ➜  Local:   http://localhost:3333/aiagenticrag/
   ➜  Network: http://192.168.12.179:3333/aiagenticrag/
+10:42:05 AM [vite] hmr update /src/App.tsx, /src/index.css
+10:42:05 AM [vite] Internal server error: /Users/antenehtessema/developer/AgenticRag/frontend/src/App.tsx: Missing semicolon. (56:5)
+
+  54 |         }
+  55 |       }
+> 56 |     } catch (err) {
+     |      ^
+  57 |       console.error("Swarm connection failed", err);
+  58 |       alert("Swarm connection failed. Is the backend running on port 8888?");
+  59 |     } finally {
+  Plugin: vite:react-babel
+  File: /Users/antenehtessema/developer/AgenticRag/frontend/src/App.tsx:56:5
+  54 |          }
+  55 |        }
+  56 |      } catch (err) {
+     |       ^
+  57 |        console.error("Swarm connection failed", err);
+  58 |        alert("Swarm connection failed. Is the backend running on port 8888?");
+      at constructor (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/parser/lib/index.js:365:19)
+      at TypeScriptParserMixin.raise (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/parser/lib/index.js:6599:19)
+      at TypeScriptParserMixin.semicolon (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/parser/lib/index.js:6895:10)
+      at TypeScriptParserMixin.parseVarStatement (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/parser/lib/index.js:13231:10)
+      at TypeScriptParserMixin.parseVarStatement (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/parser/lib/index.js:9408:31)
+      at TypeScriptParserMixin.parseStatementContent (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/parser/lib/index.js:12851:23)
+      at TypeScriptParserMixin.parseStatementContent (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/parser/lib/index.js:9508:18)
+      at TypeScriptParserMixin.parseStatementLike (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/parser/lib/index.js:12767:17)
+      at TypeScriptParserMixin.parseStatementListItem (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/parser/lib/index.js:12747:17)
+      at TypeScriptParserMixin.parseBlockOrModuleBlockBody (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/parser/lib/index.js:13316:61)
+      at TypeScriptParserMixin.parseBlockBody (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/parser/lib/index.js:13309:10)
+      at TypeScriptParserMixin.parseBlock (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/parser/lib/index.js:13297:10)
+      at TypeScriptParserMixin.parseFunctionBody (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/parser/lib/index.js:12100:24)
+      at TypeScriptParserMixin.parseFunctionBodyAndFinish (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/parser/lib/index.js:12086:10)
+      at TypeScriptParserMixin.parseFunctionBodyAndFinish (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/parser/lib/index.js:9172:18)
+      at /Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/parser/lib/index.js:13445:12
+      at TypeScriptParserMixin.withSmartMixTopicForbiddingContext (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/parser/lib/index.js:12403:14)
+      at TypeScriptParserMixin.parseFunction (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/parser/lib/index.js:13444:10)
+      at TypeScriptParserMixin.parseExportDefaultExpression (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/parser/lib/index.js:13907:19)
+      at TypeScriptParserMixin.parseExportDefaultExpression (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/parser/lib/index.js:9402:18)
+      at TypeScriptParserMixin.parseExport (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/parser/lib/index.js:13828:25)
+      at TypeScriptParserMixin.parseExport (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/parser/lib/index.js:9385:20)
+      at TypeScriptParserMixin.parseStatementContent (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/parser/lib/index.js:12878:27)
+      at TypeScriptParserMixin.parseStatementContent (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/parser/lib/index.js:9508:18)
+      at TypeScriptParserMixin.parseStatementLike (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/parser/lib/index.js:12767:17)
+      at TypeScriptParserMixin.parseModuleItem (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/parser/lib/index.js:12744:17)
+      at TypeScriptParserMixin.parseBlockOrModuleBlockBody (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/parser/lib/index.js:13316:36)
+      at TypeScriptParserMixin.parseBlockBody (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/parser/lib/index.js:13309:10)
+      at TypeScriptParserMixin.parseProgram (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/parser/lib/index.js:12622:10)
+      at TypeScriptParserMixin.parseTopLevel (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/parser/lib/index.js:12612:25)
+      at TypeScriptParserMixin.parse (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/parser/lib/index.js:14488:25)
+      at TypeScriptParserMixin.parse (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/parser/lib/index.js:10126:18)
+      at parse (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/parser/lib/index.js:14522:38)
+      at parser (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/core/lib/parser/index.js:41:34)
+      at parser.next (<anonymous>)
+      at normalizeFile (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/core/lib/transformation/normalize-file.js:64:37)
+      at normalizeFile.next (<anonymous>)
+      at run (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/core/lib/transformation/index.js:22:50)
+      at run.next (<anonymous>)
+      at transform (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/core/lib/transform.js:22:33)
+      at transform.next (<anonymous>)
+      at step (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/gensync/index.js:261:32)
+      at /Users/antenehtessema/developer/AgenticRag/frontend/node_modules/gensync/index.js:273:13
+      at async.call.result.err.err (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/gensync/index.js:223:11)
+      at /Users/antenehtessema/developer/AgenticRag/frontend/node_modules/gensync/index.js:189:28
+      at /Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/core/lib/gensync-utils/async.js:67:7
+      at /Users/antenehtessema/developer/AgenticRag/frontend/node_modules/gensync/index.js:113:33
+      at step (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/gensync/index.js:287:14)
+      at /Users/antenehtessema/developer/AgenticRag/frontend/node_modules/gensync/index.js:273:13
+      at async.call.result.err.err (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/gensync/index.js:223:11)
+10:42:05 AM [vite] Internal server error: /Users/antenehtessema/developer/AgenticRag/frontend/src/App.tsx: Missing semicolon. (56:5)
+
+  54 |         }
+  55 |       }
+> 56 |     } catch (err) {
+     |      ^
+  57 |       console.error("Swarm connection failed", err);
+  58 |       alert("Swarm connection failed. Is the backend running on port 8888?");
+  59 |     } finally {
+  Plugin: vite:react-babel
+  File: /Users/antenehtessema/developer/AgenticRag/frontend/src/App.tsx:56:5
+  54 |          }
+  55 |        }
+  56 |      } catch (err) {
+     |       ^
+  57 |        console.error("Swarm connection failed", err);
+  58 |        alert("Swarm connection failed. Is the backend running on port 8888?");
+      at constructor (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/parser/lib/index.js:365:19)
+      at TypeScriptParserMixin.raise (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/parser/lib/index.js:6599:19)
+      at TypeScriptParserMixin.semicolon (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/parser/lib/index.js:6895:10)
+      at TypeScriptParserMixin.parseVarStatement (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/parser/lib/index.js:13231:10)
+      at TypeScriptParserMixin.parseVarStatement (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/parser/lib/index.js:9408:31)
+      at TypeScriptParserMixin.parseStatementContent (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/parser/lib/index.js:12851:23)
+      at TypeScriptParserMixin.parseStatementContent (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/parser/lib/index.js:9508:18)
+      at TypeScriptParserMixin.parseStatementLike (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/parser/lib/index.js:12767:17)
+      at TypeScriptParserMixin.parseStatementListItem (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/parser/lib/index.js:12747:17)
+      at TypeScriptParserMixin.parseBlockOrModuleBlockBody (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/parser/lib/index.js:13316:61)
+      at TypeScriptParserMixin.parseBlockBody (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/parser/lib/index.js:13309:10)
+      at TypeScriptParserMixin.parseBlock (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/parser/lib/index.js:13297:10)
+      at TypeScriptParserMixin.parseFunctionBody (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/parser/lib/index.js:12100:24)
+      at TypeScriptParserMixin.parseFunctionBodyAndFinish (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/parser/lib/index.js:12086:10)
+      at TypeScriptParserMixin.parseFunctionBodyAndFinish (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/parser/lib/index.js:9172:18)
+      at /Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/parser/lib/index.js:13445:12
+      at TypeScriptParserMixin.withSmartMixTopicForbiddingContext (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/parser/lib/index.js:12403:14)
+      at TypeScriptParserMixin.parseFunction (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/parser/lib/index.js:13444:10)
+      at TypeScriptParserMixin.parseExportDefaultExpression (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/parser/lib/index.js:13907:19)
+      at TypeScriptParserMixin.parseExportDefaultExpression (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/parser/lib/index.js:9402:18)
+      at TypeScriptParserMixin.parseExport (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/parser/lib/index.js:13828:25)
+      at TypeScriptParserMixin.parseExport (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/parser/lib/index.js:9385:20)
+      at TypeScriptParserMixin.parseStatementContent (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/parser/lib/index.js:12878:27)
+      at TypeScriptParserMixin.parseStatementContent (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/parser/lib/index.js:9508:18)
+      at TypeScriptParserMixin.parseStatementLike (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/parser/lib/index.js:12767:17)
+      at TypeScriptParserMixin.parseModuleItem (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/parser/lib/index.js:12744:17)
+      at TypeScriptParserMixin.parseBlockOrModuleBlockBody (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/parser/lib/index.js:13316:36)
+      at TypeScriptParserMixin.parseBlockBody (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/parser/lib/index.js:13309:10)
+      at TypeScriptParserMixin.parseProgram (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/parser/lib/index.js:12622:10)
+      at TypeScriptParserMixin.parseTopLevel (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/parser/lib/index.js:12612:25)
+      at TypeScriptParserMixin.parse (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/parser/lib/index.js:14488:25)
+      at TypeScriptParserMixin.parse (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/parser/lib/index.js:10126:18)
+      at parse (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/parser/lib/index.js:14522:38)
+      at parser (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/core/lib/parser/index.js:41:34)
+      at parser.next (<anonymous>)
+      at normalizeFile (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/core/lib/transformation/normalize-file.js:64:37)
+      at normalizeFile.next (<anonymous>)
+      at run (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/core/lib/transformation/index.js:22:50)
+      at run.next (<anonymous>)
+      at transform (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/core/lib/transform.js:22:33)
+      at transform.next (<anonymous>)
+      at step (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/gensync/index.js:261:32)
+      at /Users/antenehtessema/developer/AgenticRag/frontend/node_modules/gensync/index.js:273:13
+      at async.call.result.err.err (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/gensync/index.js:223:11)
+      at /Users/antenehtessema/developer/AgenticRag/frontend/node_modules/gensync/index.js:189:28
+      at /Users/antenehtessema/developer/AgenticRag/frontend/node_modules/@babel/core/lib/gensync-utils/async.js:67:7
+      at /Users/antenehtessema/developer/AgenticRag/frontend/node_modules/gensync/index.js:113:33
+      at step (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/gensync/index.js:287:14)
+      at /Users/antenehtessema/developer/AgenticRag/frontend/node_modules/gensync/index.js:273:13
+      at async.call.result.err.err (/Users/antenehtessema/developer/AgenticRag/frontend/node_modules/gensync/index.js:223:11)
+10:42:20 AM [vite] hmr update /src/App.tsx, /src/index.css
