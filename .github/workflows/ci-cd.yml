@@ -10,10 +10,10 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.11'
         
@@ -23,10 +23,11 @@ jobs:
         pip install -r requirements.txt
         
     - name: Run Swarm Evaluations
-      run: |
-        pytest evaluations/test_swarm.py
       env:
         COURTLISTENER_API_KEY: ${{ secrets.COURTLISTENER_API_KEY }}
+        PYTHONPATH: .
+      run: |
+        pytest evaluations/test_swarm.py
 
   build-and-push:
     needs: test
@@ -37,17 +38,17 @@ jobs:
       packages: write
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Log in to GitHub Container Registry
-      uses: docker/login-action@v2
+      uses: docker/login-action@v3
       with:
         registry: ghcr.io
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Build and push Docker image
-      uses: docker/build-push-action@v4
+      uses: docker/build-push-action@v5
       with:
         context: .
         push: true
