@@ -1,16 +1,15 @@
 import os
+import asyncio
+import json
 from pathlib import Path
 from fastapi import FastAPI, Request
 from fastapi.responses import StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from core.graph import app
-import json
-import asyncio
 
 server = FastAPI(title="LexiSwarm API")
 
-# Enable CORS for the frontend
 server.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -28,15 +27,40 @@ async def ask_swarm(request: Request):
             "query": query,
             "messages": [],
             "step_count": 0,
-            "deficiencies": []
+            "deficiencies": [],
         }
 
+        queue: asyncio.Queue = asyncio.Queue()
+
+        async def run_graph():
+            try:
+                async for event in app.astream(initial_state):
+                    await queue.put(("event", event))
+            except Exception as e:
+                await queue.put(("error", str(e)))
+            finally:
+                await queue.put(("done", None))
+
+        task = asyncio.create_task(run_graph())
+
         try:
-            async for event in app.astream(initial_state):
-                yield f"data: {json.dumps(event)}\n\n"
-                await asyncio.sleep(0.1)
-        except Exception as e:
-            yield f"data: {json.dumps({'error': str(e)})}\n\n"
+            while True:
+                try:
+                    kind, payload = await asyncio.wait_for(queue.get(), timeout=20.0)
+                except asyncio.TimeoutError:
+                    # Send SSE comment to keep the proxy connection alive
+                    yield ": heartbeat\n\n"
+                    continue
+
+                if kind == "done":
+                    break
+                elif kind == "error":
+                    yield f"data: {json.dumps({'error': payload})}\n\n"
+                    break
+                else:
+                    yield f"data: {json.dumps(payload)}\n\n"
+        finally:
+            task.cancel()
 
     return StreamingResponse(event_generator(), media_type="text/event-stream")
 
