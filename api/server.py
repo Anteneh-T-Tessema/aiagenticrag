@@ -17,6 +17,14 @@ server.add_middleware(
     allow_headers=["*"],
 )
 
+def _safe_dumps(obj) -> str:
+    """JSON-serialize obj; fall back to a string representation on failure."""
+    try:
+        return json.dumps(obj, ensure_ascii=False)
+    except Exception as e:
+        return json.dumps({"error": f"Serialization failed: {e}"})
+
+
 @server.post("/ask")
 async def ask_swarm(request: Request):
     data = await request.json()
@@ -30,19 +38,40 @@ async def ask_swarm(request: Request):
             "deficiencies": [],
         }
 
-        it = app.astream(initial_state).__aiter__()
-        while True:
+        queue: asyncio.Queue = asyncio.Queue()
+
+        async def run_graph():
             try:
-                # Wait up to 10 s for next graph event; send heartbeat if nothing arrives
-                event = await asyncio.wait_for(it.__anext__(), timeout=10.0)
-                yield f"data: {json.dumps(event)}\n\n"
-            except StopAsyncIteration:
-                break
-            except asyncio.TimeoutError:
-                yield ": heartbeat\n\n"
-            except Exception as e:
-                yield f"data: {json.dumps({'error': str(e)})}\n\n"
-                break
+                async for event in app.astream(initial_state):
+                    print(f"[graph] event: {list(event.keys())}", flush=True)
+                    await queue.put(("event", event))
+            except asyncio.CancelledError:
+                print("[graph] cancelled", flush=True)
+            except BaseException as e:
+                print(f"[graph] error: {e}", flush=True)
+                await queue.put(("error", str(e)))
+            finally:
+                await queue.put(("done", None))
+
+        task = asyncio.create_task(run_graph())
+        try:
+            while True:
+                try:
+                    kind, payload = await asyncio.wait_for(queue.get(), timeout=10.0)
+                except asyncio.TimeoutError:
+                    yield ": heartbeat\n\n"
+                    continue
+
+                if kind == "done":
+                    break
+                elif kind == "error":
+                    yield f"data: {_safe_dumps({'error': payload})}\n\n"
+                    break
+                else:
+                    yield f"data: {_safe_dumps(payload)}\n\n"
+        finally:
+            if not task.done():
+                task.cancel()
 
     return StreamingResponse(event_generator(), media_type="text/event-stream")
 
