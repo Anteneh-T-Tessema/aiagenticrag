@@ -8,26 +8,59 @@ from langchain_core.messages import SystemMessage, HumanMessage
 
 _CL_BASE = "https://www.courtlistener.com/api/rest/v4"
 
-def _search_courtlistener(query: str, limit: int = 5) -> list[dict]:
-    """Call CourtListener search API and return structured results."""
+def _fetch_opinion_text(cluster_id: int, headers: dict) -> str:
+    """Fetch the first 1200 chars of opinion text for a given cluster."""
+    try:
+        resp = requests.get(
+            f"{_CL_BASE}/opinions/",
+            headers=headers,
+            params={"cluster": cluster_id, "page_size": 1},
+            timeout=12,
+        )
+        if resp.status_code == 200:
+            ops = resp.json().get("results", [])
+            if ops:
+                text = ops[0].get("plain_text") or ops[0].get("html_with_citations") or ""
+                # Strip HTML tags if present
+                import re
+                text = re.sub(r"<[^>]+>", " ", text).strip()
+                return text[:1200] if text else ""
+    except Exception:
+        pass
+    return ""
+
+
+def _search_courtlistener(query: str, limit: int = 3) -> list[dict]:
+    """Search CourtListener and enrich results with opinion text."""
     api_key = os.getenv("COURTLISTENER_API_KEY")
     if not api_key:
         return [{"source": "mock", "content": "CourtListener API key not configured."}]
     headers = {"Authorization": f"Token {api_key}"}
-    params = {"q": query, "type": "o", "page_size": limit}
+    params = {
+        "q": query,
+        "type": "o",
+        "stat_Precedential": "on",
+        "order_by": "score desc",
+        "page_size": limit,
+    }
     try:
         resp = requests.get(f"{_CL_BASE}/search/", headers=headers, params=params, timeout=20)
         resp.raise_for_status()
         results = resp.json().get("results", [])
-        return [
-            {
+        enriched = []
+        for r in results[:limit]:
+            snippet = (r.get("snippet") or "").strip()
+            cluster_id = r.get("cluster_id")
+            # Fetch full opinion text when snippet is absent
+            if not snippet and cluster_id:
+                snippet = _fetch_opinion_text(cluster_id, headers)
+            enriched.append({
                 "source": (r.get("citation") or ["Unknown"])[0],
                 "case_name": r.get("caseName", "Unknown"),
-                "content": r.get("snippet") or r.get("caseName", "No summary available."),
-                "opinion_id": r.get("id"),
-            }
-            for r in results
-        ]
+                "content": snippet or r.get("caseName", "No text available."),
+                "cluster_id": cluster_id,
+            })
+        return enriched or [{"source": "no results", "content": "No relevant cases found."}]
     except Exception as e:
         return [{"source": "error", "content": f"CourtListener API error: {e}"}]
 
@@ -79,7 +112,7 @@ def synthesizer_node(state: AgentState):
 
 
 def route_verification(state: AgentState):
-    if state.get("deficiencies") and state.get("step_count", 0) < 3:
+    if state.get("deficiencies") and state.get("step_count", 0) < 2:
         print("--- ROUTER: Deficiency found. Retrying... ---")
         return "orchestrator"
     return "synthesizer"

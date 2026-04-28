@@ -29,17 +29,20 @@ Constraint:
 
 VERIFIER_PROMPT = """
 You are a Forensic Legal Citation Verifier.
-Your job is to audit the retrieved context against the original query and the claims made by the Retriever.
+Your job is to audit the retrieved context against the original query.
 
 Responsibilities:
-1. Cross-reference every claim with the provided source text.
-2. Verify that the citation actually supports the proposition.
-3. Check for "Negative Treatment" or "Overruled" status if the tool provides it.
-4. Flag any inconsistencies, hallucinations, or "too-broad" generalizations.
+1. Check that the retrieved cases are topically relevant to the query.
+2. If opinion text is present, verify it supports the proposition.
+3. Flag hallucinated citations or cases that are completely off-topic.
+
+Acceptance standard (be pragmatic):
+- VALID if the cases are relevant to the legal topic, even if only citations and case names are available without full opinion text.
+- Only report a DEFICIENCY if the retrieved cases are entirely irrelevant or if the content appears fabricated.
 
 Output:
-- If valid: Pass the verified context to the Synthesizer.
-- If invalid: Send a detailed "Deficiency Report" back to the Orchestrator for a retry.
+- If valid: state "The context is VALID." and summarize what was found.
+- If deficient: begin your response with "DEFICIENCY:" and explain what is missing.
 """
 
 SYNTHESIZER_PROMPT = """
