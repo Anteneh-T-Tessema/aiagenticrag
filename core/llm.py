@@ -3,18 +3,23 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-def get_model(ollama_model: str = "qwen2.5-coder:7b", hf_model: str = "mistralai/Mistral-7B-Instruct-v0.3"):
+# HF router base URL (Novita backend, supports Qwen models)
+_HF_BASE_URL = "https://router.huggingface.co/novita/v3/openai/"
+# Novita-formatted model name for Qwen2.5-72B
+_HF_DEFAULT_MODEL = "qwen/qwen-2.5-72b-instruct"
+
+def get_model(ollama_model: str = "qwen2.5-coder:7b"):
     hf_token = os.getenv("HF_TOKEN")
 
     if hf_token:
-        from langchain_huggingface import ChatHuggingFace, HuggingFaceEndpoint
-        endpoint = HuggingFaceEndpoint(
-            repo_id=os.getenv("HF_MODEL", hf_model),
-            huggingfacehub_api_token=hf_token,
+        from langchain_openai import ChatOpenAI
+        return ChatOpenAI(
+            base_url=_HF_BASE_URL,
+            api_key=hf_token,
+            model=os.getenv("HF_MODEL", _HF_DEFAULT_MODEL),
             temperature=0.01,
-            max_new_tokens=1024,
+            max_tokens=1024,
         )
-        return ChatHuggingFace(llm=endpoint)
     else:
         from langchain_ollama import ChatOllama
         return ChatOllama(
@@ -23,8 +28,6 @@ def get_model(ollama_model: str = "qwen2.5-coder:7b", hf_model: str = "mistralai
             base_url=os.getenv("OLLAMA_BASE_URL", "http://localhost:11434"),
         )
 
-# Logic Model (Strong Reasoning)
-logic_llm = get_model("qwen2.5-coder:7b", "mistralai/Mistral-7B-Instruct-v0.3")
-
-# Routing Model (Fast/Smaller)
-routing_llm = get_model("llama3.2:3b", "mistralai/Mistral-7B-Instruct-v0.3")
+# Both agents share the same cloud model; differentiate locally via ollama_model arg
+logic_llm = get_model("qwen2.5-coder:7b")
+routing_llm = get_model("llama3.2:3b")

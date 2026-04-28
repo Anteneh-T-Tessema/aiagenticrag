@@ -31,11 +31,12 @@ async def ask_swarm(request: Request):
             "deficiencies": []
         }
 
-        # Stream the graph events
-        async for event in app.astream(initial_state):
-            # Format event for SSE
-            yield f"data: {json.dumps(event)}\n\n"
-            await asyncio.sleep(0.1)
+        try:
+            async for event in app.astream(initial_state):
+                yield f"data: {json.dumps(event)}\n\n"
+                await asyncio.sleep(0.1)
+        except Exception as e:
+            yield f"data: {json.dumps({'error': str(e)})}\n\n"
 
     return StreamingResponse(event_generator(), media_type="text/event-stream")
 
