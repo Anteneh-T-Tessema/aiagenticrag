@@ -57,9 +57,11 @@ def verifier_node(state: AgentState):
 def synthesizer_node(state: AgentState):
     """Synthesizer: Writes the IRAC memo."""
     print("--- SYNTHESIZER: Generating Memo ---")
-    
+
+    # Fall back to raw_context if verifier exhausted retries without fully verifying
+    context = state.get("verified_context") or state.get("raw_context", [])
     system_msg = SystemMessage(content=SYNTHESIZER_PROMPT)
-    user_msg = HumanMessage(content=f"Verified Context: {state['verified_context']}")
+    user_msg = HumanMessage(content=f"Verified Context: {context}")
     
     response = logic_llm.invoke([system_msg, user_msg])
     
