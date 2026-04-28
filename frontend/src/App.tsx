@@ -27,7 +27,7 @@ export default function App() {
     setActiveAgent('orchestrator');
 
     // SUPPORT FOR CLOUD BACKEND
-    const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://127.0.0.1:8888';
+    const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || '';
 
     try {
       const response = await fetch(`${BACKEND_URL}/ask`, {

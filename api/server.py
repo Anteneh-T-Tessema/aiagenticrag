@@ -1,6 +1,8 @@
 import os
+from pathlib import Path
 from fastapi import FastAPI, Request
 from fastapi.responses import StreamingResponse
+from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from core.graph import app
 import json
@@ -37,6 +39,12 @@ async def ask_swarm(request: Request):
 
     return StreamingResponse(event_generator(), media_type="text/event-stream")
 
+# Serve built React frontend (must come after API routes so /ask takes priority)
+_frontend_dist = Path(__file__).parent.parent / "frontend" / "dist"
+if _frontend_dist.exists():
+    server.mount("/", StaticFiles(directory=str(_frontend_dist), html=True), name="static")
+
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(server, host="0.0.0.0", port=8000)
+    port = int(os.getenv("PORT", 7860))
+    uvicorn.run(server, host="0.0.0.0", port=port)

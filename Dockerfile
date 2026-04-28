@@ -10,26 +10,29 @@ RUN npm run build
 FROM python:3.11-slim
 WORKDIR /app
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    curl \
-    && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements and install
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy backend code
-COPY . .
+# Copy backend source
+COPY agents/ ./agents/
+COPY api/ ./api/
+COPY core/ ./core/
+COPY data/ ./data/
+COPY mcp_servers/ ./mcp_servers/
+COPY main.py .
 
-# Copy built frontend from Stage 1
+# Copy built frontend
 COPY --from=frontend-builder /app/frontend/dist /app/frontend/dist
 
-# Expose ports for API and Frontend
-EXPOSE 8000
+# HF Spaces runs as a non-root user
+RUN useradd -m -u 1000 user
+USER user
 
-# Environment variables
 ENV PYTHONUNBUFFERED=1
+ENV PORT=7860
 
-# Start the FastAPI server
-CMD ["uvicorn", "api.server:server", "--host", "0.0.0.0", "--port", "8000"]
+EXPOSE 7860
+
+CMD ["uvicorn", "api.server:server", "--host", "0.0.0.0", "--port", "7860"]

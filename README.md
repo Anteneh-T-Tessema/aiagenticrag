@@ -1,3 +1,12 @@
+---
+title: LexiSwarm - Agentic Legal RAG
+emoji: ⚖️
+colorFrom: blue
+colorTo: yellow
+sdk: docker
+pinned: false
+---
+
 # Agentic RAG Swarm: Legal Intelligence & Discovery
 
 ![LexiSwarm Hero](lexiswarm_hero_concept.png)
