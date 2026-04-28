@@ -1,78 +1,89 @@
-from typing import Dict, List
+import os
+import requests
 from langgraph.graph import StateGraph, END
 from core.state import AgentState
 from core.llm import logic_llm
 from agents.prompts import ORCHESTRATOR_PROMPT, RETRIEVER_PROMPT, VERIFIER_PROMPT, SYNTHESIZER_PROMPT
 from langchain_core.messages import SystemMessage, HumanMessage
 
+_CL_BASE = "https://www.courtlistener.com/api/rest/v4"
+
+def _search_courtlistener(query: str, limit: int = 5) -> list[dict]:
+    """Call CourtListener search API and return structured results."""
+    api_key = os.getenv("COURTLISTENER_API_KEY")
+    if not api_key:
+        return [{"source": "mock", "content": "CourtListener API key not configured."}]
+    headers = {"Authorization": f"Token {api_key}"}
+    params = {"q": query, "type": "o", "page_size": limit}
+    try:
+        resp = requests.get(f"{_CL_BASE}/search/", headers=headers, params=params, timeout=20)
+        resp.raise_for_status()
+        results = resp.json().get("results", [])
+        return [
+            {
+                "source": (r.get("citation") or ["Unknown"])[0],
+                "case_name": r.get("caseName", "Unknown"),
+                "content": r.get("snippet") or r.get("caseName", "No summary available."),
+                "opinion_id": r.get("id"),
+            }
+            for r in results
+        ]
+    except Exception as e:
+        return [{"source": "error", "content": f"CourtListener API error: {e}"}]
+
+
 def orchestrator_node(state: AgentState):
-    """Lead Legal Researcher: Plans the research."""
     print("--- ORCHESTRATOR: Planning ---")
-    
-    # Construct the prompt
     system_msg = SystemMessage(content=ORCHESTRATOR_PROMPT)
     user_msg = HumanMessage(content=f"Query: {state['query']}\nCurrent Plan: {state.get('plan', [])}\nDeficiencies: {state.get('deficiencies', [])}")
-    
     response = logic_llm.invoke([system_msg, user_msg])
-    
-    # In a real app, we'd parse the plan into a list. For now, we'll store the text.
     return {
         "plan": [response.content],
         "step_count": state.get("step_count", 0) + 1,
-        "deficiencies": [] # Clear deficiencies once we've replanned
+        "deficiencies": [],
     }
 
+
 def retriever_node(state: AgentState):
-    """Retriever Agent: Calls CourtListener MCP tools."""
     print("--- RETRIEVER: Fetching Precedents ---")
-    
-    # This node would typically use tool-calling logic. 
-    # For the showcase, we'll simulate the tool response or use the logic_llm to "decide" the search terms.
+    # Ask the LLM to extract a concise search query from the orchestrator's plan
     system_msg = SystemMessage(content=RETRIEVER_PROMPT)
-    user_msg = HumanMessage(content=f"Plan: {state['plan'][-1]}")
-    
-    # Simulation: We'll pretend the agent found a case.
-    # In the final version, this will be: `mcp_client.call_tool("search_opinions", ...)`
-    mock_context = [
-        {"source": "345 U.S. 123", "content": "The Fourth Amendment protects against unreasonable searches..."}
-    ]
-    
-    return {"raw_context": mock_context}
+    user_msg = HumanMessage(content=(
+        f"Plan: {state['plan'][-1]}\n\n"
+        "Extract the single most important search query from this plan (max 10 words) "
+        "and respond with ONLY that query, nothing else."
+    ))
+    search_query = logic_llm.invoke([system_msg, user_msg]).content.strip().strip('"')
+    print(f"--- RETRIEVER: Searching CourtListener for: {search_query!r}")
+    context = _search_courtlistener(search_query, limit=5)
+    return {"raw_context": context}
+
 
 def verifier_node(state: AgentState):
-    """Forensic Verifier: Audits citations."""
     print("--- VERIFIER: Auditing Citations ---")
-    
     system_msg = SystemMessage(content=VERIFIER_PROMPT)
     user_msg = HumanMessage(content=f"Query: {state['query']}\nRetrieved Context: {state['raw_context']}")
-    
     response = logic_llm.invoke([system_msg, user_msg])
-    
-    # If the response contains keywords like "invalid" or "deficiency", we trigger a loop
     if "deficiency" in response.content.lower() or "invalid" in response.content.lower():
         return {"deficiencies": [response.content]}
-    else:
-        return {"verified_context": state['raw_context']}
+    return {"verified_context": state["raw_context"]}
+
 
 def synthesizer_node(state: AgentState):
-    """Synthesizer: Writes the IRAC memo."""
     print("--- SYNTHESIZER: Generating Memo ---")
-
-    # Fall back to raw_context if verifier exhausted retries without fully verifying
     context = state.get("verified_context") or state.get("raw_context", [])
     system_msg = SystemMessage(content=SYNTHESIZER_PROMPT)
     user_msg = HumanMessage(content=f"Verified Context: {context}")
-    
     response = logic_llm.invoke([system_msg, user_msg])
-    
     return {"final_response": response.content}
 
+
 def route_verification(state: AgentState):
-    """Decides loop or synthesis."""
     if state.get("deficiencies") and state.get("step_count", 0) < 3:
         print("--- ROUTER: Deficiency found. Retrying... ---")
         return "orchestrator"
     return "synthesizer"
+
 
 # Build Graph
 workflow = StateGraph(AgentState)
