@@ -30,37 +30,19 @@ async def ask_swarm(request: Request):
             "deficiencies": [],
         }
 
-        queue: asyncio.Queue = asyncio.Queue()
-
-        async def run_graph():
+        it = app.astream(initial_state).__aiter__()
+        while True:
             try:
-                async for event in app.astream(initial_state):
-                    await queue.put(("event", event))
+                # Wait up to 10 s for next graph event; send heartbeat if nothing arrives
+                event = await asyncio.wait_for(it.__anext__(), timeout=10.0)
+                yield f"data: {json.dumps(event)}\n\n"
+            except StopAsyncIteration:
+                break
+            except asyncio.TimeoutError:
+                yield ": heartbeat\n\n"
             except Exception as e:
-                await queue.put(("error", str(e)))
-            finally:
-                await queue.put(("done", None))
-
-        task = asyncio.create_task(run_graph())
-
-        try:
-            while True:
-                try:
-                    kind, payload = await asyncio.wait_for(queue.get(), timeout=20.0)
-                except asyncio.TimeoutError:
-                    # Send SSE comment to keep the proxy connection alive
-                    yield ": heartbeat\n\n"
-                    continue
-
-                if kind == "done":
-                    break
-                elif kind == "error":
-                    yield f"data: {json.dumps({'error': payload})}\n\n"
-                    break
-                else:
-                    yield f"data: {json.dumps(payload)}\n\n"
-        finally:
-            task.cancel()
+                yield f"data: {json.dumps({'error': str(e)})}\n\n"
+                break
 
     return StreamingResponse(event_generator(), media_type="text/event-stream")
 
