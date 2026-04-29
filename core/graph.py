@@ -10,6 +10,19 @@ from langchain_core.messages import SystemMessage, HumanMessage
 
 _CL_BASE = "https://www.courtlistener.com/api/rest/v4"
 
+_STOP_WORDS = {
+    "what", "is", "are", "the", "a", "an", "how", "does", "do", "for", "in", "of",
+    "to", "and", "or", "but", "on", "at", "by", "from", "with", "about", "as", "be",
+    "been", "that", "this", "which", "when", "where", "who", "will", "would", "can",
+    "could", "should", "may", "might", "under", "legal", "law", "case", "cases",
+    "standard", "standards", "between", "have", "has", "their", "there", "any",
+}
+
+def _keywords(query: str) -> str:
+    words = re.findall(r"\b[a-zA-Z]+\b", query.lower())
+    terms = [w for w in words if w not in _STOP_WORDS and len(w) > 2]
+    return " ".join(terms[:8]) or query
+
 
 def _fetch_opinion_text(cluster_id: int, headers: dict) -> str:
     try:
@@ -79,8 +92,7 @@ async def orchestrator_node(state: AgentState):
 
 async def retriever_node(state: AgentState):
     print("--- RETRIEVER: Fetching Precedents ---")
-    # Use the original user query directly — most reliable signal for CourtListener
-    search_query = state["query"].strip()
+    search_query = _keywords(state["query"])
     print(f"--- RETRIEVER: Searching CourtListener for: {search_query!r}")
     context = await asyncio.get_event_loop().run_in_executor(
         None, lambda: _search_courtlistener(search_query, limit=5)
