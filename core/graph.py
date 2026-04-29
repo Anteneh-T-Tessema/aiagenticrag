@@ -82,12 +82,16 @@ async def retriever_node(state: AgentState):
     system_msg = SystemMessage(content=RETRIEVER_PROMPT)
     user_msg = HumanMessage(content=(
         f"Plan: {state['plan'][-1]}\n\n"
-        'Produce a CourtListener boolean search query for the single most important legal issue in this plan. '
-        'Use quoted phrases for key terms and AND/OR operators. '
-        'Example format: "qualified immunity" AND "excessive force" '
-        'Respond with ONLY the query string, nothing else.'
+        "Extract 4-6 key legal terms from this plan that best describe the central legal issue. "
+        "Output ONLY the terms separated by spaces, no punctuation, no quotes, no explanation. "
+        "Example: qualified immunity excessive force fourth amendment"
     ))
-    search_query = (await logic_llm.ainvoke([system_msg, user_msg])).content.strip().strip('"\'')
+    raw = (await logic_llm.ainvoke([system_msg, user_msg])).content.strip()
+    # Take only the last non-empty line in case LLM adds preamble
+    lines = [l.strip() for l in raw.split('\n') if l.strip()]
+    search_query = lines[-1] if lines else raw
+    # Strip any stray quotes or backticks
+    search_query = search_query.strip('`\'"')
     print(f"--- RETRIEVER: Searching CourtListener for: {search_query!r}")
     context = await asyncio.get_event_loop().run_in_executor(
         None, lambda: _search_courtlistener(search_query, limit=5)
