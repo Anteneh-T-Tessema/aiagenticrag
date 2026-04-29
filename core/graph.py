@@ -5,7 +5,7 @@ import requests
 from langgraph.graph import StateGraph, END
 from core.state import AgentState
 from core.llm import logic_llm
-from agents.prompts import ORCHESTRATOR_PROMPT, RETRIEVER_PROMPT, VERIFIER_PROMPT, SYNTHESIZER_PROMPT
+from agents.prompts import ORCHESTRATOR_PROMPT, VERIFIER_PROMPT, SYNTHESIZER_PROMPT
 from langchain_core.messages import SystemMessage, HumanMessage
 
 _CL_BASE = "https://www.courtlistener.com/api/rest/v4"
@@ -79,19 +79,8 @@ async def orchestrator_node(state: AgentState):
 
 async def retriever_node(state: AgentState):
     print("--- RETRIEVER: Fetching Precedents ---")
-    system_msg = SystemMessage(content=RETRIEVER_PROMPT)
-    user_msg = HumanMessage(content=(
-        f"Plan: {state['plan'][-1]}\n\n"
-        "Extract 4-6 key legal terms from this plan that best describe the central legal issue. "
-        "Output ONLY the terms separated by spaces, no punctuation, no quotes, no explanation. "
-        "Example: qualified immunity excessive force fourth amendment"
-    ))
-    raw = (await logic_llm.ainvoke([system_msg, user_msg])).content.strip()
-    # Take only the last non-empty line in case LLM adds preamble
-    lines = [l.strip() for l in raw.split('\n') if l.strip()]
-    search_query = lines[-1] if lines else raw
-    # Strip any stray quotes or backticks
-    search_query = search_query.strip('`\'"')
+    # Use the original user query directly — most reliable signal for CourtListener
+    search_query = state["query"].strip()
     print(f"--- RETRIEVER: Searching CourtListener for: {search_query!r}")
     context = await asyncio.get_event_loop().run_in_executor(
         None, lambda: _search_courtlistener(search_query, limit=5)
