@@ -35,16 +35,17 @@ def _search_courtlistener(query: str, limit: int = 3) -> list[dict]:
     if not api_key:
         return [{"source": "mock", "content": "CourtListener API key not configured."}]
     headers = {"Authorization": f"Token {api_key}"}
-    params = {
-        "q": query,
-        "type": "o",
-        "stat_Precedential": "on",
-        "order_by": "score desc",
-        "page_size": limit,
-        "court": "scotus ca1 ca2 ca3 ca4 ca5 ca6 ca7 ca8 ca9 ca10 ca11 cadc cafc",
-    }
+    federal_courts = ["scotus", "ca1", "ca2", "ca3", "ca4", "ca5", "ca6", "ca7", "ca8", "ca9", "ca10", "ca11", "cadc", "cafc"]
+    params = [
+        ("q", query),
+        ("type", "o"),
+        ("stat_Precedential", "on"),
+        ("order_by", "score desc"),
+        ("page_size", str(limit)),
+    ] + [("court", c) for c in federal_courts]
     try:
         resp = requests.get(f"{_CL_BASE}/search/", headers=headers, params=params, timeout=20)
+        print(f"--- RETRIEVER: CourtListener status={resp.status_code} url={resp.url[:120]}")
         resp.raise_for_status()
         results = resp.json().get("results", [])
         enriched = []
