@@ -19,7 +19,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY agents/ ./agents/
 COPY api/ ./api/
 COPY core/ ./core/
-COPY data/ ./data/
 COPY mcp_servers/ ./mcp_servers/
 COPY main.py .
 
