@@ -12,7 +12,7 @@ def get_model(ollama_model: str = "qwen2.5-coder:7b"):
         from langchain_groq import ChatGroq
         return ChatGroq(
             api_key=groq_key,
-            model=os.getenv("GROQ_MODEL", "llama-3.1-70b-versatile"),
+            model=os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile"),
             temperature=0.01,
             max_tokens=1024,
         )
