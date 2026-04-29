@@ -19,7 +19,11 @@ _STOP_WORDS = {
 }
 
 def _keywords(query: str) -> str:
-    words = re.findall(r"\b[a-zA-Z]+\b", query.lower())
+    lowered = query.lower()
+    if "qualified immunity" in lowered and "excessive force" in lowered:
+        return '"qualified immunity" AND "excessive force"'
+
+    words = re.findall(r"\b[a-zA-Z]+\b", lowered)
     terms = [w for w in words if w not in _STOP_WORDS and len(w) > 2]
     return " ".join(terms[:8]) or query
 
@@ -48,7 +52,7 @@ def _search_courtlistener(query: str, limit: int = 3) -> list[dict]:
     if not api_key:
         return [{"source": "mock", "content": "CourtListener API key not configured."}]
     headers = {"Authorization": f"Token {api_key}"}
-    federal_courts = ["scotus", "ca1", "ca2", "ca3", "ca4", "ca5", "ca6", "ca7", "ca8", "ca9", "ca10", "ca11", "cadc", "cafc"]
+    federal_courts = ["scotus", "ca1", "ca2", "ca3", "ca4", "ca5", "ca6", "ca7", "ca8", "ca9", "ca10", "ca11"]
     params = [
         ("q", query),
         ("type", "o"),
