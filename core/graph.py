@@ -35,7 +35,14 @@ def _search_courtlistener(query: str, limit: int = 3) -> list[dict]:
     if not api_key:
         return [{"source": "mock", "content": "CourtListener API key not configured."}]
     headers = {"Authorization": f"Token {api_key}"}
-    params = {"q": query, "type": "o", "stat_Precedential": "on", "order_by": "score desc", "page_size": limit}
+    params = {
+        "q": query,
+        "type": "o",
+        "stat_Precedential": "on",
+        "order_by": "score desc",
+        "page_size": limit,
+        "court": "scotus ca1 ca2 ca3 ca4 ca5 ca6 ca7 ca8 ca9 ca10 ca11 cadc cafc",
+    }
     try:
         resp = requests.get(f"{_CL_BASE}/search/", headers=headers, params=params, timeout=20)
         resp.raise_for_status()
@@ -74,14 +81,15 @@ async def retriever_node(state: AgentState):
     system_msg = SystemMessage(content=RETRIEVER_PROMPT)
     user_msg = HumanMessage(content=(
         f"Plan: {state['plan'][-1]}\n\n"
-        "Extract the single most important search query from this plan (max 10 words) "
-        "and respond with ONLY that query, nothing else."
+        'Produce a CourtListener boolean search query for the single most important legal issue in this plan. '
+        'Use quoted phrases for key terms and AND/OR operators. '
+        'Example format: "qualified immunity" AND "excessive force" '
+        'Respond with ONLY the query string, nothing else.'
     ))
-    search_query = (await logic_llm.ainvoke([system_msg, user_msg])).content.strip().strip('"')
+    search_query = (await logic_llm.ainvoke([system_msg, user_msg])).content.strip().strip('"\'')
     print(f"--- RETRIEVER: Searching CourtListener for: {search_query!r}")
-    # Run blocking HTTP call in thread pool so event loop stays free
     context = await asyncio.get_event_loop().run_in_executor(
-        None, lambda: _search_courtlistener(search_query, limit=3)
+        None, lambda: _search_courtlistener(search_query, limit=5)
     )
     return {"raw_context": context}
 
