@@ -3,20 +3,26 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# HF router base URL (Novita backend, supports Qwen models)
-_HF_BASE_URL = "https://router.huggingface.co/novita/v3/openai/"
-# Novita-formatted model name for Qwen2.5-72B
-_HF_DEFAULT_MODEL = "qwen/qwen-2.5-72b-instruct"
-
 def get_model(ollama_model: str = "qwen2.5-coder:7b"):
+    groq_key = os.getenv("GROQ_API_KEY")
     hf_token = os.getenv("HF_TOKEN")
 
-    if hf_token:
+    if groq_key:
+        # Groq: fast, free tier, OpenAI-compatible
+        from langchain_groq import ChatGroq
+        return ChatGroq(
+            api_key=groq_key,
+            model=os.getenv("GROQ_MODEL", "llama-3.1-70b-versatile"),
+            temperature=0.01,
+            max_tokens=1024,
+        )
+    elif hf_token:
+        # HF Inference Providers (requires credits)
         from langchain_openai import ChatOpenAI
         return ChatOpenAI(
-            base_url=_HF_BASE_URL,
+            base_url="https://router.huggingface.co/novita/v3/openai/",
             api_key=hf_token,
-            model=os.getenv("HF_MODEL", _HF_DEFAULT_MODEL),
+            model=os.getenv("HF_MODEL", "qwen/qwen-2.5-72b-instruct"),
             temperature=0.01,
             max_tokens=1024,
         )
@@ -28,6 +34,5 @@ def get_model(ollama_model: str = "qwen2.5-coder:7b"):
             base_url=os.getenv("OLLAMA_BASE_URL", "http://localhost:11434"),
         )
 
-# Both agents share the same cloud model; differentiate locally via ollama_model arg
 logic_llm = get_model("qwen2.5-coder:7b")
 routing_llm = get_model("llama3.2:3b")

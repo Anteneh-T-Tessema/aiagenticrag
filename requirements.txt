@@ -3,6 +3,7 @@ langchain-community
 langgraph
 langchain-ollama
 langchain-openai
+langchain-groq
 huggingface-hub
 chromadb
 mcp
